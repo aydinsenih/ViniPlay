@@ -601,6 +601,7 @@ function getSettings() {
     activeStreamProfileId: "ffmpeg-default",
     searchScope: "channels_only",
     notificationLeadTime: 10,
+    skipVod: false, // Skip streams without tvg-id (VOD content)
     sourcesLastUpdated: null,
   };
 
@@ -916,12 +917,24 @@ async function processAndMergeSources(req) {
       const lines = content.split("\n");
       let processedContent = "";
       let streamCount = 0; // <-- NEW
+      let skippedCount = 0; // <-- NEW: Track skipped VOD streams
+      let skipNextUrl = false; // <-- NEW: Flag to skip the URL line after a skipped EXTINF
+
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (line.startsWith("#EXTINF:")) {
           streamCount++; // <-- NEW
           const tvgIdMatch = line.match(/tvg-id="([^"]*)"/);
           const tvgId = tvgIdMatch ? tvgIdMatch[1] : "";
+
+          // NEW: If skipVod is enabled and stream has no tvg-id, skip it
+          if (settings.skipVod && !tvgId) {
+            skippedCount++;
+            skipNextUrl = true; // Flag to skip the next URL line
+            continue; // Skip this EXTINF line
+          }
+
+          skipNextUrl = false; // Reset flag if we're not skipping
           const tvgUnique = tvgId ? tvgId : fnv1a(line);
           const uniqueChannelId = `${source.id}_${tvgUnique}`;
 
@@ -946,7 +959,12 @@ async function processAndMergeSources(req) {
 
           processedAttributes += ` vini-source="${source.name}"`;
           line = processedAttributes + namePart;
+        } else if (skipNextUrl && line && !line.startsWith("#")) {
+          // NEW: Skip the URL line if the previous EXTINF was skipped
+          skipNextUrl = false;
+          continue;
         }
+
         if (line) {
           processedContent += line + "\n";
         }
@@ -954,7 +972,13 @@ async function processAndMergeSources(req) {
 
       mergedM3uContent += processedContent.replace(/#EXTM3U/i, "") + "\n";
       source.status = "Success";
-      source.statusMessage = `Processed ${streamCount} streams successfully.`; // <-- CORRECT, DYNAMIC VERSION
+      const statusMsg =
+        settings.skipVod && skippedCount > 0
+          ? `Processed ${
+              streamCount - skippedCount
+            } streams successfully. Skipped ${skippedCount} VOD streams.`
+          : `Processed ${streamCount} streams successfully.`;
+      source.statusMessage = statusMsg;
       console.log(
         `[M3U] Source "${source.name}" processed successfully from ${sourcePathForLog}.`
       );

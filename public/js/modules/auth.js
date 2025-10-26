@@ -78,6 +78,7 @@ const initializeUIElements = () => {
     UIElements.channelSelectorList = document.getElementById('channel-selector-list');
     UIElements.channelSelectorSearch = document.getElementById('channel-selector-search');
     UIElements.channelSelectorCancelBtn = document.getElementById('channel-selector-cancel-btn');
+    UIElements.skipVodCheckbox = document.getElementById('skip-vod-checkbox');
     UIElements.multiviewSaveLayoutBtn = document.getElementById('multiview-save-layout-btn');
     UIElements.multiviewLoadLayoutBtn = document.getElementById('multiview-load-layout-btn');
     UIElements.multiviewDeleteLayoutBtn = document.getElementById('multiview-delete-layout-btn');

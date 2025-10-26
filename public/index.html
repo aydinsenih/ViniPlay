@@ -1184,6 +1184,15 @@
                                 <p class="text-xs text-gray-500 mb-2">Set how many minutes before a program starts you'd like to be notified.</p>
                                 <input type="number" id="notification-lead-time-input" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500" min="1" value="10">
                             </div>
+                            <div>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="skip-vod-checkbox" class="mr-3 w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-400">Skip VOD Content</span>
+                                        <p class="text-xs text-gray-500">When enabled, streams without a tvg-id will be ignored during processing (typically VOD/on-demand content)</p>
+                                    </div>
+                                </label>
+                            </div>
                             <div class="border-t border-gray-700/50 pt-4">
                                 <label class="block text-sm font-medium text-gray-400 mb-1">Server Public IP Address</label>
                                 <p class="text-xs text-gray-500 mb-2">Server Public IP Address</p>

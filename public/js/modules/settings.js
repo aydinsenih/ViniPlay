@@ -276,6 +276,7 @@ export const updateUIFromSettings = async () => {
     
     settings.searchScope = settings.searchScope || 'channels_only_filtered';
     settings.notificationLeadTime = settings.notificationLeadTime ?? 10;
+    settings.skipVod = settings.skipVod ?? false;
     
     settings.dvr = settings.dvr || {};
     settings.dvr.preBufferMinutes = settings.dvr.preBufferMinutes ?? 1;
@@ -288,6 +289,7 @@ export const updateUIFromSettings = async () => {
     fetchAndDisplayPublicIp();
     UIElements.searchScopeSelect.value = settings.searchScope;
     UIElements.notificationLeadTimeInput.value = settings.notificationLeadTime;
+    UIElements.skipVodCheckbox.checked = settings.skipVod;
     
     // Update DVR inputs
     if (UIElements.dvrPreBufferInput) UIElements.dvrPreBufferInput.value = settings.dvr.preBufferMinutes;
@@ -706,6 +708,7 @@ export function setupSettingsEventListeners() {
         }
         await saveSettingAndNotify(saveGlobalSetting, { notificationLeadTime: value });
     });
+    UIElements.skipVodCheckbox.addEventListener('change', (e) => saveSettingAndNotify(saveGlobalSetting, { skipVod: e.target.checked }));
     
     // --- MODIFIED: Event listeners for hardware info modal ---
     UIElements.hardwareInfoBtn.addEventListener('click', () => openModal(UIElements.hardwareInfoModal));
