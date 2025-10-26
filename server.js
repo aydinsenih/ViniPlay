@@ -928,7 +928,7 @@ async function processAndMergeSources(req) {
           const tvgId = tvgIdMatch ? tvgIdMatch[1] : "";
 
           // NEW: If skipVod is enabled and stream has no tvg-id, skip it
-          if (settings.skipVod && !tvgId) {
+          if (settings.skipVod && !tvgIdMatch) {
             skippedCount++;
             skipNextUrl = true; // Flag to skip the next URL line
             continue; // Skip this EXTINF line
