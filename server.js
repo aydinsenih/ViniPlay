@@ -1384,6 +1384,15 @@ async function processAndMergeSources(req) {
             let movieCount = 0;
             let seriesCount = 0;
 
+            function fnv1a(str) {
+                let hash = 0x811c9dc5;
+                for (let i = 0; i < str.length; i++) {
+                    hash ^= str.charCodeAt(i);
+                    hash = (hash * 0x01000193) >>> 0;
+                }
+                return hash.toString(16); // Hex string output
+            }
+
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (line.startsWith('#EXTINF:')) {
@@ -1414,7 +1423,7 @@ async function processAndMergeSources(req) {
                     const name = nameMatch ? nameMatch[1] : ((commaIndex !== -1) ? currentExtInf.substring(commaIndex + 1).trim() : 'Unknown');
 
                     // Consistent Unique Channel ID Generation
-                    const originalTvgId = idMatch ? idMatch[1] : `no-tvg-id-${name.replace(/[^a-zA-Z0-9]/g, '')}`;
+                    const originalTvgId = idMatch ? idMatch[1] : fnv1a(line);
                     const finalUniqueChannelId = `${source.id}_${originalTvgId}`;
 
                     // Inject the *corrected* unique ID into the #EXTINF line
